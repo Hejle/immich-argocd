@@ -1,0 +1,33 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: immich-db
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  instances: 1
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:14-0.5.3
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: immich-pg-superuser
+
+  # Single-node on Raspberry Pi; adjust as needed
+  storage:
+    size: 30Gi
+    storageClass: local-path
+
+  # Bootstrap database, user and initial extensions
+  bootstrap:
+    initdb:
+      database: immich
+      owner: immich
+      secret:
+        name: immich-pg-user
+      # load extensions that Immich expects with VectorChord
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+        - CREATE EXTENSION IF NOT EXISTS "cube";
+        - CREATE EXTENSION IF NOT EXISTS "earthdistance";
+
+  # Service defaults: <name>-rw is the write service (we use this for DB_HOSTNAME)
+  # CNPG docs on initdb and services: https://cloudnative-pg.io/documentation/current/bootstrap/

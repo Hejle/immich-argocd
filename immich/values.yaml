@@ -1,0 +1,36 @@
+# REQUIRED BY THE CHART (per README)
+image:
+  tag: v2.1.0 #TODO
+
+immich:
+  # Mount the existing PVC created above
+  persistence:
+    library:
+      enabled: true
+      existingClaim: immich-library
+
+  # Enable Redis bundled by the chart
+  redis:
+    enabled: true
+
+  # Database & Redis connection (common-library merges to all components)
+  env:
+    # CNPG write service for our cluster: <cluster-name>-rw
+    DB_HOSTNAME: immich-db-rw
+    DB_PORT: "5432"
+    DB_DATABASE_NAME: immich
+    REDIS_HOSTNAME: '{{ printf "%s-redis-master" .Release.Name }}'
+
+  # Pull DB user/password from a Secret created below (so values.yaml can stay public)
+  envFrom:
+    - secretRef:
+        name: immich-db-app-env
+
+# Optional: constrain to ARM64 nodes (Raspberry Pi)
+controllers:
+  # apply to all components via common-library
+  main:
+    pod:
+      nodeSelector:
+        kubernetes.io/arch: arm64
+        kubernetes.io/os: linux

@@ -1,0 +1,88 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich-root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOURUSER/immich-argocd.git #TODO
+    targetRevision: main
+    path: argocd # this file isn't rendered; we just need something valid
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+# 0) CloudNativePG operator (Helm)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/cloudnative-pg/charts
+    targetRevision: main
+    path: charts/cloudnative-pg
+    helm:
+      valueFiles: [ values.yaml ]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cnpg-system
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions:
+      - CreateNamespace=true
+---
+# 1) CNPG Cluster (Kustomize -> CRDs apply after operator is up)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cnpg-immich
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/YOURUSER/immich-argocd.git #TODO
+    targetRevision: main
+    path: infra/cnpg-cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: immich
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions:
+      - CreateNamespace=true
+---
+# 2) Immich (Helm, Redis enabled, uses existingClaim for the library PVC)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: immich
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: default
+  source:
+    chart: immich
+    repoURL: oci://ghcr.io/immich-app/immich-charts/immich
+    targetRevision: 0.10.0 # pick the chart version you want
+    helm:
+      valueFiles: [ values.yaml ]
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: immich
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions:
+      - CreateNamespace=true
