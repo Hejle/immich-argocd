@@ -119,12 +119,12 @@ spec:
                     - immich.hejlepi.local
                   secretName: hejlepi-local-tls
 
-            controllers:
-              main:
-                pod:
-                  nodeSelector:
-                    kubernetes.io/arch: arm64
-                    kubernetes.io/os: linux 
+          controllers:
+            main:
+              containers:
+                main:
+                  image:
+                    tag: v2.1.0
 
     # (2) Your Kustomize bits (PVC, redirects, etc.)
     - repoURL: https://github.com/Hejle/immich-argocd.git
