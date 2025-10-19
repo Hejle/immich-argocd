@@ -7,6 +7,9 @@ metadata:
 spec:
   instances: 1
   imageName: ghcr.io/tensorchord/cloudnative-vectorchord:14-0.5.3
+  postgresql:
+    shared_preload_libraries:
+      - "vchord.so"
   enableSuperuserAccess: true
   superuserSecret:
     name: immich-pg-superuser
@@ -24,10 +27,9 @@ spec:
       secret:
         name: immich-pg-user
       # load extensions that Immich expects with VectorChord
-      postInitApplicationSQL:
-        - CREATE EXTENSION IF NOT EXISTS "vectors";
-        - CREATE EXTENSION IF NOT EXISTS "cube";
-        - CREATE EXTENSION IF NOT EXISTS "earthdistance";
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
 
   # Service defaults: <name>-rw is the write service (we use this for DB_HOSTNAME)
   # CNPG docs on initdb and services: https://cloudnative-pg.io/documentation/current/bootstrap/
