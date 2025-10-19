@@ -82,7 +82,6 @@ spec:
       chart: immich
       targetRevision: 0.10.0
       helm:
-        helm:
         values: |
           image:
             tag: v2.1.0
@@ -92,9 +91,9 @@ spec:
 
           immich:
             persistence:
-            library:
-              enabled: true
-              existingClaim: immich-library
+              library:
+                enabled: true
+                existingClaim: immich-library
 
             env:
               DB_HOSTNAME: immich-db-rw
@@ -104,28 +103,28 @@ spec:
 
             envFrom:
               - secretRef:
-                name: immich-db-app-env
+                  name: immich-db-app-env
 
-            ingress:
+          ingress:
+            main:
+              enabled: true
+              className: traefik
+              hosts:
+                - host: immich.hejlepi.local
+                  paths:
+                    - path: /
+                      pathType: Prefix
+              tls:
+                - hosts:
+                    - immich.hejlepi.local
+                  secretName: hejlepi-local-tls
+
+            controllers:
               main:
-                enabled: true
-                className: traefik
-                hosts:
-                  - host: immich.hejlepi.local
-                    paths:
-                      - path: /
-                        pathType: Prefix
-                tls:
-                  - hosts:
-                      - immich.hejlepi.local
-                    secretName: hejlepi-local-tls
-
-              controllers:
-                main:
-                  pod:
-                    nodeSelector:
-                      kubernetes.io/arch: arm64
-                      kubernetes.io/os: linux 
+                pod:
+                  nodeSelector:
+                    kubernetes.io/arch: arm64
+                    kubernetes.io/os: linux 
 
     # (2) Your Kustomize bits (PVC, redirects, etc.)
     - repoURL: https://github.com/Hejle/immich-argocd.git
