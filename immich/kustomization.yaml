@@ -4,3 +4,4 @@ namespace: immich
 resources:
   - pvc-library.yaml
   - secret-db-app-env.yaml
+  - immich-ingress.yaml
