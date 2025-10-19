@@ -28,11 +28,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/cloudnative-pg/charts
-    targetRevision: main
-    path: charts/cloudnative-pg
+    chart: cloudnative-pg
+    repoURL: oci://ghcr.io/cloudnative-pg/charts
+    targetRevision: 0.26.0
     helm:
-      valueFiles: [ values.yaml ]
+      skipCrds: false
+      values: |
+        createCRDs: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cnpg-system
@@ -62,6 +64,7 @@ spec:
     automated: { prune: true, selfHeal: true }
     syncOptions:
       - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true
 ---
 # 2) Immich (Helm, Redis enabled, uses existingClaim for the library PVC)
 apiVersion: argoproj.io/v1alpha1
