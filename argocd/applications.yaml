@@ -29,7 +29,7 @@ spec:
   project: default
   source:
     chart: cloudnative-pg
-    repoURL: oci://ghcr.io/cloudnative-pg/charts
+    repoURL: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
     targetRevision: 0.26.0
     helm:
       skipCrds: false
