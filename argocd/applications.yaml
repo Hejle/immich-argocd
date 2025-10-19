@@ -95,15 +95,15 @@ spec:
                 enabled: true
                 existingClaim: immich-library
 
-            env:
-              DB_HOSTNAME: immich-db-rw
-              DB_PORT: "5432"
-              DB_DATABASE_NAME: immich
-              REDIS_HOSTNAME: '{{ printf "%s-redis-master" .Release.Name }}'
+          env:
+            DB_HOSTNAME: immich-db-rw
+            DB_PORT: "5432"
+            DB_DATABASE_NAME: immich
+            REDIS_HOSTNAME: immich-valkey
 
-            envFrom:
-              - secretRef:
-                  name: immich-db-app-env
+          envFrom:
+            - secretRef:
+                name: immich-db-app-env
 
           ingress:
             main:
