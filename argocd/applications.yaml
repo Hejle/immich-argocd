@@ -95,16 +95,6 @@ spec:
                 enabled: true
                 existingClaim: immich-library
 
-          env:
-            DB_HOSTNAME: immich-db-rw
-            DB_PORT: "5432"
-            DB_DATABASE_NAME: immich
-            REDIS_HOSTNAME: immich-valkey
-
-          envFrom:
-            - secretRef:
-                name: immich-db-app-env
-
           ingress:
             main:
               enabled: true
@@ -125,7 +115,17 @@ spec:
                 main:
                   image:
                     tag: v2.1.0
-
+                  env:
+                    DB_HOSTNAME: immich-db-rw
+                    DB_PORT: "5432"
+                    DB_DATABASE_NAME: immich
+                    REDIS_HOSTNAME: immich-valkey
+                    DB_USERNAME: immich
+                    DB_PASSWORD:
+                      valueFrom:
+                        secretKeyRef:
+                          name: immich-db-app-env
+                          key: DB_PASSWORD
     # (2) Your Kustomize bits (PVC, redirects, etc.)
     - repoURL: https://github.com/Hejle/immich-argocd.git
       targetRevision: master
