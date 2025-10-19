@@ -86,6 +86,10 @@ spec:
     - repoURL: https://github.com/Hejle/immich-argocd.git
       targetRevision: master
       ref: values
+
+    - repoURL: https://github.com/Hejle/immich-argocd.git
+      targetRevision: master
+      path: immich                # <— points to your immich/kustomization.yaml directory
   destination:
     server: https://kubernetes.default.svc
     namespace: immich
