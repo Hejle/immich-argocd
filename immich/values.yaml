@@ -2,16 +2,16 @@
 image:
   tag: v2.1.0 #TODO
 
+# Enables the bundled Valkey (replaces Redis subchart)
+valkey:
+  enabled: true
+
 immich:
   # Mount the existing PVC created above
   persistence:
     library:
       enabled: true
       existingClaim: immich-library
-
-  # Enable Redis bundled by the chart
-  redis:
-    enabled: true
 
   # Database & Redis connection (common-library merges to all components)
   env:

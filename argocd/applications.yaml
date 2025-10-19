@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOURUSER/immich-argocd.git #TODO
-    targetRevision: main
-    path: argocd # this file isn't rendered; we just need something valid
+    repoURL: hhttps://github.com/Hejle/immich-argocd.git
+    targetRevision: master
+    path: argocd # this file isn't rendered; we just need something valid #TODO
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -29,7 +29,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/cloudnative-pg/charts
-    targetRevision: main
+    targetRevision: master
     path: charts/cloudnative-pg
     helm:
       valueFiles: [ values.yaml ]
@@ -52,8 +52,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOURUSER/immich-argocd.git #TODO
-    targetRevision: main
+    repoURL: https://github.com/Hejle/immich-argocd.git #TODO
+    targetRevision: master
     path: infra/cnpg-cluster
   destination:
     server: https://kubernetes.default.svc
@@ -73,12 +73,16 @@ metadata:
     argocd.argoproj.io/sync-wave: "2"
 spec:
   project: default
-  source:
-    chart: immich
-    repoURL: oci://ghcr.io/immich-app/immich-charts/immich
-    targetRevision: 0.10.0 # pick the chart version you want
-    helm:
-      valueFiles: [ values.yaml ]
+  sources:
+    - chart: immich
+      repoURL: oci://ghcr.io/immich-app/immich-charts/immich
+      targetRevision: immich-0.10.0
+      helm:
+        valueFiles:
+          - $values/immich/values.yaml
+    - repoURL: https://github.com/Hejle/immich-argocd.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: immich
