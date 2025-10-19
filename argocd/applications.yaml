@@ -77,19 +77,60 @@ metadata:
 spec:
   project: default
   sources:
-    - chart: immich
-      repoURL: oci://ghcr.io/immich-app/immich-charts/immich
+    # (1) Helm (OCI)
+    - repoURL: oci://ghcr.io/immich-app/immich-charts/immich
+      chart: immich
       targetRevision: 0.10.0
       helm:
-        valueFiles:
-          - $values/immich/values.yaml
-    - repoURL: https://github.com/Hejle/immich-argocd.git
-      targetRevision: master
-      ref: values
+        helm:
+        values: |
+          image:
+            tag: v2.1.0
 
+          valkey:
+            enabled: true
+
+          immich:
+            persistence:
+            library:
+              enabled: true
+              existingClaim: immich-library
+
+            env:
+              DB_HOSTNAME: immich-db-rw
+              DB_PORT: "5432"
+              DB_DATABASE_NAME: immich
+              REDIS_HOSTNAME: '{{ printf "%s-redis-master" .Release.Name }}'
+
+            envFrom:
+              - secretRef:
+                name: immich-db-app-env
+
+            ingress:
+              main:
+                enabled: true
+                className: traefik
+                hosts:
+                  - host: immich.hejlepi.local
+                    paths:
+                      - path: /
+                        pathType: Prefix
+                tls:
+                  - hosts:
+                      - immich.hejlepi.local
+                    secretName: hejlepi-local-tls
+
+              controllers:
+                main:
+                  pod:
+                    nodeSelector:
+                      kubernetes.io/arch: arm64
+                      kubernetes.io/os: linux 
+
+    # (2) Your Kustomize bits (PVC, redirects, etc.)
     - repoURL: https://github.com/Hejle/immich-argocd.git
       targetRevision: master
-      path: immich                # <— points to your immich/kustomization.yaml directory
+      path: immich
   destination:
     server: https://kubernetes.default.svc
     namespace: immich
