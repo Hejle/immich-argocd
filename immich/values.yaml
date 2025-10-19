@@ -26,6 +26,21 @@ immich:
     - secretRef:
         name: immich-db-app-env
 
+ingress:
+  main:
+    enabled: true
+    className: traefik
+    hosts:
+      - host: immich.hejlepi.local
+        paths:
+          - path: /
+            pathType: Prefix
+    # Optional TLS if you have a cert (SAN or wildcard)
+    tls:
+      - hosts:
+          - immich.hejlepi.local
+        secretName: hejlepi-local-tls
+
 # Optional: constrain to ARM64 nodes (Raspberry Pi)
 controllers:
   # apply to all components via common-library
