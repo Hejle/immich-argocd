@@ -27,3 +27,32 @@ spec:
                 name: immich-server
                 port:
                   number: 2283
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/response-compression: "false"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+      - immich.hejlepi.local
+      secretName: hejlepi-local-tls   # must exist in namespace 'immich'
+  rules:
+  - host: immich.hejlepi.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: immich-server
+            port:
+              number: 2283

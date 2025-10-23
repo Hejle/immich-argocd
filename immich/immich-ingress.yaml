@@ -6,21 +6,20 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: default
     traefik.ingress.kubernetes.io/response-compression: "false"
+    traefik.ingress.kubernetes.io/router.priority: "100"
 spec:
   ingressClassName: traefik
-  tls:
-    - hosts:
-      - immich.hejlepi.local
-      secretName: hejlepi-local-tls   # must exist in namespace 'immich'
   rules:
-  - host: immich.hejlepi.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: immich-server
-            port:
-              number: 2283
+    - host: immich.hejle.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: immich-server
+                port:
+                  number: 2283
