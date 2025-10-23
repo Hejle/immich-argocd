@@ -95,20 +95,6 @@ spec:
                 enabled: true
                 existingClaim: immich-library
 
-          ingress:
-            main:
-              enabled: true
-              className: traefik
-              hosts:
-                - host: immich.hejlepi.local
-                  paths:
-                    - path: /
-                      pathType: Prefix
-              tls:
-                - hosts:
-                    - immich.hejlepi.local
-                  secretName: hejlepi-local-tls
-
           controllers:
             main:
               containers:
