@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    kubernetes.io/ingress.class: nginx-lan
+spec:
+  ingressClassName: nginx-lan
+  tls:
+  - hosts:
+    - hejlepi.local
+    secretName: hejlepi-local-tls
+  rules:
+    - host: immich.hejlepi.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: immich-server
+                port:
+                  number: 2283
