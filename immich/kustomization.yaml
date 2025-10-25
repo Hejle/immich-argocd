@@ -6,3 +6,4 @@ resources:
   - secret-db-app-env.yaml
   - immich-ingress.yaml
   - immich-ingress-local.yaml
+  - immich-ingress-local-traefik.yaml
