@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: immich
+  name: immich-traefik
   namespace: immich
   annotations:
     kubernetes.io/ingress.class: traefik
